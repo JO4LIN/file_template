@@ -1,0 +1,115 @@
+{
+  "name": "file-template",
+  "displayName": "File Template",
+  "description": "Allows developers to create custom file templates and quickly generate files with parameters.",
+  "version": "1.0.0",
+  "publisher": "Jo4Lin",
+  "engines": {
+    "vscode": ">=1.60.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onCommand:file-template.createFileFromTemplate"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "file-template.createFileFromTemplate",
+        "title": "New File from Template"
+      },
+      {
+        "command": "file-template.importTemplates",
+        "title": "Import File Templates"
+      },
+      {
+        "command": "file-template.exportTemplates",
+        "title": "Export File Templates"
+      },
+      {
+        "command": "file-template.manageTemplates",
+        "title": "Manage File Templates"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "file-template.createFileFromTemplate",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation@10"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "file-template.importTemplates",
+          "when": "true",
+          "group": "navigation@12"
+        },
+        {
+          "command": "file-template.exportTemplates",
+          "when": "true",
+          "group": "navigation@13"
+        },
+        {
+          "command": "file-template.manageTemplates",
+          "when": "true",
+          "group": "navigation@11"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "File Template",
+      "properties": {
+        "fileTemplate.templates": {
+          "type": "array",
+          "description": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)",
+          "markdownDescription": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)\n\n[Import Templates in Bulk](command:file-template.importTemplates) | [Export Templates in Bulk](command:file-template.exportTemplates)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "description": "模板名称" },
+              "description": { "type": "string", "description": "模板说明（可选，展示在参数输入界面）" },
+              "parameters": {
+                "type": "array",
+                "description": "参数配置数组，每个参数为对象，支持 name/description/required 字段。",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string", "description": "参数名" },
+                    "description": { "type": "string", "description": "参数说明（可选）" },
+                    "required": { "type": "boolean", "description": "是否必填，默认true" }
+                  },
+                  "required": ["name"]
+                }
+              },
+              "parameterDescriptions": { "type": "array", "items": { "type": "string" }, "description": "参数说明数组（与参数一一对应，展示在参数输入界面）" },
+              "parameterRequired": { "type": "array", "items": { "type": "boolean" }, "description": "参数必填数组（与参数一一对应，true=必填，false=可选）" },
+              "template": { "type": "string", "description": "模板内容，支持 JS 逻辑" },
+              "fileName": { "type": "string", "description": "输出文件名，支持参数变量" }
+            },
+            "required": ["name", "parameters", "template", "fileName"]
+          },
+          "default": []
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.60.0",
+    "typescript": "^4.4.3",
+    "eslint": "^7.32.0",
+    "@types/node": "^14.17.6",
+    "vsce": "^2.4.2"
+  },
+  "dependencies": {},
+  "author": "Jo4 Lin"
+} 

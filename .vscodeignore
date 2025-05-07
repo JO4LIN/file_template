@@ -1,0 +1,9 @@
+out/test
+node_modules
+.vscode
+src
+.gitignore
+.vscodeignore
+tsconfig.json
+**/*.map
+.DS_Store 
