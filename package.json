@@ -4,6 +4,7 @@
   "description": "Allows developers to create custom file templates and quickly generate files with parameters.",
   "version": "1.0.0",
   "publisher": "Jo4Lin",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": ">=1.60.0"
   },
