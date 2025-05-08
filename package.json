@@ -111,5 +111,9 @@
     "vsce": "^2.4.2"
   },
   "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JO4LIN/file_template.git"
+  },
   "author": "Jo4 Lin"
 } 
