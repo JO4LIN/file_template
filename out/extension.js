@@ -1,34 +1,46 @@
 /// <reference types="vscode" />
 'use strict';
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deactivate = exports.activate = void 0;
 // src/extension.ts
 // VSCode File Template Extension Main Entry
 // Implement custom template file creation
 //
 // Author: your-name
-
-import * as vscode from 'vscode';
-import * as path from 'path';
-import * as fs from 'fs';
-import { execFile } from 'child_process';
-
-interface TemplateConfig {
-    name: string;
-    parameters: { name: string; description?: string; required?: boolean }[];
-    template: string;
-    fileName: string;
-    description?: string;
-    templateType: 'js' | 'string';
-}
-
-export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand('file-template.createFileFromTemplate', async (uri: vscode.Uri) => {
-        const templates: TemplateConfig[] = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
-        let params: Record<string, string> = {};
+const vscode = __importStar(require("vscode"));
+const path = __importStar(require("path"));
+const fs = __importStar(require("fs"));
+function activate(context) {
+    let disposable = vscode.commands.registerCommand('file-template.createFileFromTemplate', async (uri) => {
+        const templates = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
+        let params = {};
         if (!templates.length) {
             vscode.window.showWarningMessage('No file templates configured. Please add one in settings.');
             return;
         }
-
         // Grouped dropdown to select template
         const pickItems = templates.map(t => ({
             label: t.name,
@@ -37,16 +49,16 @@ export function activate(context: vscode.ExtensionContext) {
         const picked = await vscode.window.showQuickPick(pickItems, {
             placeHolder: 'Select a template'
         });
-        if (!picked) return;
+        if (!picked)
+            return;
         const template = picked.template;
-
         // Parameter input: single InputBox, input all parameters at once (comma separated), supports object array parameter config
         if (template.parameters && template.parameters.length > 0) {
             let prompt = '';
             if (template.parameters.length > 1) {
                 prompt = 'Please separate parameters with commas';
             }
-            const placeHolder = template.parameters.map((p: any) => p.name).join(',');
+            const placeHolder = template.parameters.map((p) => p.name).join(',');
             const input = await vscode.window.showInputBox({
                 prompt,
                 placeHolder,
@@ -61,9 +73,10 @@ export function activate(context: vscode.ExtensionContext) {
                     return null;
                 }
             });
-            if (input === undefined) return;
+            if (input === undefined)
+                return;
             const values = input.split(',').map(s => s.trim());
-            template.parameters.forEach((p: any, i: number) => {
+            template.parameters.forEach((p, i) => {
                 params[p.name] = values[i] || '';
             });
         }
@@ -90,10 +103,12 @@ export function activate(context: vscode.ExtensionContext) {
                     for (const key in params) {
                         content = content.replace(new RegExp(`\\$\\{${key}\\}`, 'g'), params[key]);
                     }
-                } else {
+                }
+                else {
                     content = '';
                 }
-            } catch (e) {
+            }
+            catch (e) {
                 vscode.window.showErrorMessage('Template JS execution error: ' + e);
                 return;
             }
@@ -114,19 +129,13 @@ export function activate(context: vscode.ExtensionContext) {
         const doc = await vscode.workspace.openTextDocument(filePath);
         vscode.window.showTextDocument(doc);
     });
-
     // Register template management command (Webview overview)
     let manageDisposable = vscode.commands.registerCommand('file-template.manageTemplates', async () => {
-        const panel = vscode.window.createWebviewPanel(
-            'fileTemplateManager',
-            'File Template Manager',
-            vscode.ViewColumn.Active,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true
-            }
-        );
-        let templates: TemplateConfig[] = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
+        const panel = vscode.window.createWebviewPanel('fileTemplateManager', 'File Template Manager', vscode.ViewColumn.Active, {
+            enableScripts: true,
+            retainContextWhenHidden: true
+        });
+        let templates = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
         panel.webview.html = getManagerHtml(templates);
         panel.reveal(vscode.ViewColumn.Active);
         panel.iconPath = vscode.Uri.file(require('path').join(__dirname, '../resources/template.svg'));
@@ -135,33 +144,40 @@ export function activate(context: vscode.ExtensionContext) {
                 templates.push({ name: 'new template', description: '', parameters: [{ name: '', description: '', required: true }], template: '', fileName: 'new_file.txt', templateType: 'string' });
                 await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
                 panel.webview.html = getManagerHtml(templates);
-            } else if (msg.type === 'edit') {
+            }
+            else if (msg.type === 'edit') {
                 const { idx, field, value } = msg;
                 if (field === 'parameters') {
                     templates[idx].parameters = value;
-                } else if (field === 'name') {
+                }
+                else if (field === 'name') {
                     templates[idx].name = value;
-                } else if (field === 'fileName') {
+                }
+                else if (field === 'fileName') {
                     templates[idx].fileName = value;
-                } else if (field === 'template') {
+                }
+                else if (field === 'template') {
                     templates[idx].template = value;
-                } else if (field === 'templateType') {
-                    templates[idx].templateType = value as 'js' | 'string';
-                } else if (field === 'description') {
+                }
+                else if (field === 'templateType') {
+                    templates[idx].templateType = value;
+                }
+                else if (field === 'description') {
                     templates[idx].description = value;
                 }
                 await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
                 panel.webview.html = getManagerHtml(templates);
-            } else if (msg.type === 'delete') {
+            }
+            else if (msg.type === 'delete') {
                 templates.splice(msg.idx, 1);
                 await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
                 panel.webview.html = getManagerHtml(templates);
-            } else if (msg.type === 'editSettings') {
+            }
+            else if (msg.type === 'editSettings') {
                 vscode.commands.executeCommand('workbench.action.openSettingsJson');
             }
         });
     });
-
     // Import templates command
     let importDisposable = vscode.commands.registerCommand('file-template.importTemplates', async () => {
         const uris = await vscode.window.showOpenDialog({ filters: { 'JSON': ['json'] }, canSelectMany: false });
@@ -169,37 +185,40 @@ export function activate(context: vscode.ExtensionContext) {
             const buf = await vscode.workspace.fs.readFile(uris[0]);
             try {
                 const imported = JSON.parse(buf.toString());
-                if (!Array.isArray(imported)) throw new Error('File content is not a template array');
-                let templates: TemplateConfig[] = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
-                let always: 'replace' | 'skip' | '' = '';
+                if (!Array.isArray(imported))
+                    throw new Error('File content is not a template array');
+                let templates = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
+                let always = '';
                 let changed = false;
                 for (const tpl of imported) {
                     const idx = templates.findIndex(t => t.name === tpl.name);
                     if (idx !== -1) {
                         if (!always) {
-                            const pick = await vscode.window.showInformationMessage(
-                                `Template with the same name "${tpl.name}" already exists. What do you want to do?`,
-                                { modal: true },
-                                'Replace', 'Skip', 'Always Replace', 'Always Skip'
-                            );
-                            if (!pick) continue;
+                            const pick = await vscode.window.showInformationMessage(`Template with the same name "${tpl.name}" already exists. What do you want to do?`, { modal: true }, 'Replace', 'Skip', 'Always Replace', 'Always Skip');
+                            if (!pick)
+                                continue;
                             if (pick === 'Replace') {
                                 templates[idx] = tpl;
                                 changed = true;
-                            } else if (pick === 'Skip') {
+                            }
+                            else if (pick === 'Skip') {
                                 // skip
-                            } else if (pick === 'Always Replace') {
+                            }
+                            else if (pick === 'Always Replace') {
                                 always = 'replace';
                                 templates[idx] = tpl;
                                 changed = true;
-                            } else if (pick === 'Always Skip') {
+                            }
+                            else if (pick === 'Always Skip') {
                                 always = 'skip';
                             }
-                        } else if (always === 'replace') {
+                        }
+                        else if (always === 'replace') {
                             templates[idx] = tpl;
                             changed = true;
                         } // skip does nothing
-                    } else {
+                    }
+                    else {
                         templates.push(tpl);
                         changed = true;
                     }
@@ -208,15 +227,15 @@ export function activate(context: vscode.ExtensionContext) {
                     await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
                     vscode.window.showInformationMessage('Templates imported');
                 }
-            } catch (e) {
+            }
+            catch (e) {
                 vscode.window.showErrorMessage('Import failed: ' + e);
             }
         }
     });
-
     // Export templates command
     let exportDisposable = vscode.commands.registerCommand('file-template.exportTemplates', async () => {
-        const templates: TemplateConfig[] = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
+        const templates = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
         if (!templates.length) {
             vscode.window.showWarningMessage('No templates to export');
             return;
@@ -227,16 +246,15 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage('Templates exported: ' + uri.fsPath);
         }
     });
-
     context.subscriptions.push(disposable);
     context.subscriptions.push(manageDisposable);
     context.subscriptions.push(importDisposable);
     context.subscriptions.push(exportDisposable);
 }
-
-export function deactivate() {}
-
-function getManagerHtml(templates: TemplateConfig[]): string {
+exports.activate = activate;
+function deactivate() { }
+exports.deactivate = deactivate;
+function getManagerHtml(templates) {
     // Only supports parameter as object array
     return `
     <html>
@@ -580,8 +598,7 @@ function getManagerHtml(templates: TemplateConfig[]): string {
     </html>
     `;
 }
-
-function getParamFormHtml(template: TemplateConfig): string {
+function getParamFormHtml(template) {
     return `
     <html>
     <head>
@@ -642,16 +659,15 @@ function getParamFormHtml(template: TemplateConfig): string {
     </html>
     `;
 }
-
 // Utility: snake_case to PascalCase
-function toPascalCase(str: string): string {
+function toPascalCase(str) {
     return str
         .split('_')
         .map(s => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase())
         .join('');
 }
-
 // Utility: PascalCase/camelCase to snake_case
-function toSnakeCase(str: string): string {
+function toSnakeCase(str) {
     return str.replace(/([A-Z])/g, '_$1').replace(/^_/, '').toLowerCase();
-} 
+}
+//# sourceMappingURL=extension.js.map

@@ -68,25 +68,25 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": { "type": "string", "description": "模板名称" },
-              "description": { "type": "string", "description": "模板说明（可选，展示在参数输入界面）" },
+              "name": { "type": "string", "description": "Template name" },
+              "description": { "type": "string", "description": "Template description (optional, shown in management UI)" },
               "parameters": {
                 "type": "array",
-                "description": "参数配置数组，每个参数为对象，支持 name/description/required 字段。",
+                "description": "Parameter configuration array, each parameter is an object supporting name/description/required fields.",
                 "items": {
                   "type": "object",
                   "properties": {
-                    "name": { "type": "string", "description": "参数名" },
-                    "description": { "type": "string", "description": "参数说明（可选）" },
-                    "required": { "type": "boolean", "description": "是否必填，默认true" }
+                    "name": { "type": "string", "description": "Parameter name" },
+                    "description": { "type": "string", "description": "Parameter description (optional)" },
+                    "required": { "type": "boolean", "description": "Required or not, default true" }
                   },
                   "required": ["name"]
                 }
               },
-              "parameterDescriptions": { "type": "array", "items": { "type": "string" }, "description": "参数说明数组（与参数一一对应，展示在参数输入界面）" },
-              "parameterRequired": { "type": "array", "items": { "type": "boolean" }, "description": "参数必填数组（与参数一一对应，true=必填，false=可选）" },
-              "template": { "type": "string", "description": "模板内容，支持 JS 逻辑" },
-              "fileName": { "type": "string", "description": "输出文件名，支持参数变量" }
+              "parameterDescriptions": { "type": "array", "items": { "type": "string" }, "description": "Parameter description array (corresponds to parameters, shown in management UI)" },
+              "parameterRequired": { "type": "array", "items": { "type": "boolean" }, "description": "Parameter required array (corresponds to parameters, true=required, false=optional)" },
+              "template": { "type": "string", "description": "Template content, supports JS logic" },
+              "fileName": { "type": "string", "description": "Output file name, supports parameter variables" }
             },
             "required": ["name", "parameters", "template", "fileName"]
           },
