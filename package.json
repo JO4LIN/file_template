@@ -4,6 +4,7 @@
   "description": "Allows developers to create custom file templates and quickly generate files with parameters.",
   "version": "1.0.0",
   "publisher": "Jo4Lin",
+  "license": "MIT",
   "icon": "images/icon.png",
   "engines": {
     "vscode": ">=1.60.0"
@@ -65,7 +66,7 @@
         "fileTemplate.templates": {
           "type": "array",
           "description": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)",
-          "markdownDescription": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)\n\n[Import Templates in Bulk](command:file-template.importTemplates) | [Export Templates in Bulk](command:file-template.exportTemplates)",
+          "markdownDescription": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)\n\n[Import Templates](command:file-template.importTemplates) | [Export Templates](command:file-template.exportTemplates)",
           "items": {
             "type": "object",
             "properties": {
@@ -114,7 +115,7 @@
   "dependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/JO4LIN/file_template.git"
+    "url": "https://github.com/JO4LIN/resource.git"
   },
   "author": "Jo4 Lin"
 } 

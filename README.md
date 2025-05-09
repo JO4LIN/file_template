@@ -17,7 +17,7 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 ## Template Configuration Example
 
 #### Edit in template manager
-![alt text](./template_example.png)
+![alt text](./file_template/template_example.png)
 
 #### Edit in settings.json
 
@@ -25,7 +25,7 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 [
     {
       "name": "API Service",
-      "description": "Quickly generate an API Service file with basic structure",
+      "description": "Quickly generate an API Service file with basic structure.",
       "parameters": [
         {
           "name": "serviceName",
