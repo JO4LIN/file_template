@@ -1,7 +1,7 @@
 {
   "name": "file-template",
   "displayName": "File Template",
-  "description": "Allows developers to create custom file templates and quickly generate files with parameters.",
+  "description": "Create custom file templates and quickly generate files with parameters.",
   "version": "1.0.0",
   "publisher": "Jo4Lin",
   "license": "MIT",

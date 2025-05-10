@@ -11,15 +11,15 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 ## Getting Started
 1. Install the extension and reload VSCode.
 2. Open VSCode settings, search for `fileTemplate.templates`, and click **Manage Templates** to open the visual manager.
-3. Add or edit templates as needed. You can also edit JSON directly via **Edit in settings.json**.
+3. Add or edit templates as needed (auto save). You can also edit JSON directly via **Edit in settings.json**.
 4. To create a file, right-click a folder and select **New File from Template**, or use the command palette.
 
 ## Template Configuration Example
 
-#### Edit in template manager
+- Edit in template manager
 ![alt text](./file_template/template_example.png)
 
-#### Edit in settings.json
+- Edit in settings.json
 
 ```json
 [
