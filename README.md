@@ -17,10 +17,9 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 ## Template Configuration Example
 
 - Edit in template manager
-![alt text](./file_template/template_example.png)
+![alt text](./images/template_example.png)
 
 - Edit in settings.json
-
 ```json
 [
     {
