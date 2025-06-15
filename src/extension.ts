@@ -127,14 +127,17 @@ export function activate(context: vscode.ExtensionContext) {
             }
         );
         let templates: TemplateConfig[] = vscode.workspace.getConfiguration().get('fileTemplate.templates', []);
-        panel.webview.html = getManagerHtml(templates);
+        let expandedIdx = -1;
+        panel.webview.html = getManagerHtml(templates, expandedIdx);
         panel.reveal(vscode.ViewColumn.Active);
         panel.iconPath = vscode.Uri.file(require('path').join(__dirname, '../resources/template.svg'));
         panel.webview.onDidReceiveMessage(async (msg) => {
             if (msg.type === 'add') {
                 templates.push({ name: 'new template', description: '', parameters: [{ name: '', description: '', required: true }], template: '', fileName: 'new_file.txt', templateType: 'string' });
+                expandedIdx = typeof msg.expandedIdx === 'number' ? msg.expandedIdx : templates.length - 1;
                 await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
-                panel.webview.html = getManagerHtml(templates);
+                panel.webview.html = getManagerHtml(templates, expandedIdx);
+                panel.webview.postMessage({ type: 'updateTemplates', templates, expandedIdx });
             } else if (msg.type === 'edit') {
                 const { idx, field, value } = msg;
                 if (field === 'parameters') {
@@ -150,12 +153,16 @@ export function activate(context: vscode.ExtensionContext) {
                 } else if (field === 'description') {
                     templates[idx].description = value;
                 }
+                expandedIdx = typeof msg.expandedIdx === 'number' ? msg.expandedIdx : idx;
                 await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
-                panel.webview.html = getManagerHtml(templates);
+                panel.webview.html = getManagerHtml(templates, expandedIdx);
+                panel.webview.postMessage({ type: 'updateTemplates', templates, expandedIdx });
             } else if (msg.type === 'delete') {
                 templates.splice(msg.idx, 1);
+                expandedIdx = -1;
                 await vscode.workspace.getConfiguration().update('fileTemplate.templates', templates, vscode.ConfigurationTarget.Global);
-                panel.webview.html = getManagerHtml(templates);
+                panel.webview.html = getManagerHtml(templates, expandedIdx);
+                panel.webview.postMessage({ type: 'updateTemplates', templates, expandedIdx });
             } else if (msg.type === 'editSettings') {
                 vscode.commands.executeCommand('workbench.action.openSettingsJson');
             }
@@ -236,7 +243,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {}
 
-function getManagerHtml(templates: TemplateConfig[]): string {
+function getManagerHtml(templates: TemplateConfig[], expandedIdx: number = -1): string {
     // Only supports parameter as object array
     return `
     <html>
@@ -293,9 +300,8 @@ function getManagerHtml(templates: TemplateConfig[]): string {
         ${templates.length === 0 ? `` : `
             <h2>Template Overview</h2>
             <div class="template-list">
-                
                 ${templates.map((tpl, idx) => `
-                    <div class="template-item${idx===0?' expanded':''}" id="template-item-${idx}">
+                    <div class="template-item${expandedIdx === idx ? ' expanded' : ''}" id="template-item-${idx}">
                         <div class="template-header" onclick="toggleDetail(${idx})">
                             <span class="template-title">${tpl.name || '未命名模板'}</span>
                             <button class="toggle-btn" title="展开/收起">▶</button>
@@ -359,16 +365,21 @@ function getManagerHtml(templates: TemplateConfig[]): string {
         <script>
         const vscode = acquireVsCodeApi();
         let templates = ${JSON.stringify(templates)};
-        let expanded = templates.map((_,i)=>i===0); // 默认第一个展开
-        function addTemplate() { vscode.postMessage({ type: 'add' }); }
-        function edit(idx, field, value) { vscode.postMessage({ type: 'edit', idx, field, value }); }
+        let expandedIdx = ${expandedIdx};
+        let expanded = templates.map((_,i)=>i===expandedIdx);
+        function addTemplate() { 
+            vscode.postMessage({ type: 'add', expandedIdx: templates.length }); 
+        }
+        function edit(idx, field, value) { 
+            vscode.postMessage({ type: 'edit', idx, field, value, expandedIdx: idx });
+        }
         function deleteTemplate(idx) { vscode.postMessage({ type: 'delete', idx }); }
         function editSettings() { vscode.postMessage({ type: 'editSettings' }); }
-        function addParam(idx) { vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: [...(templates[idx].parameters||[]), {name:'',description:'',required:true}] }); }
-        function editParam(idx, pi, field, value) { const params = [...(templates[idx].parameters||[])]; if(field==='required') value = !!value; params[pi] = { ...params[pi], [field]: value }; vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: params }); }
-        function deleteParam(idx, pi) { const params = [...(templates[idx].parameters||[])]; params.splice(pi,1); vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: params }); }
+        function addParam(idx) { vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: [...(templates[idx].parameters||[]), {name:'',description:'',required:true}], expandedIdx: idx }); }
+        function editParam(idx, pi, field, value) { const params = [...(templates[idx].parameters||[])]; if(field==='required') value = !!value; params[pi] = { ...params[pi], [field]: value }; vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: params, expandedIdx: idx }); }
+        function deleteParam(idx, pi) { const params = [...(templates[idx].parameters||[])]; params.splice(pi,1); vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: params, expandedIdx: idx }); }
         function toggleDetail(idx) {
-            expanded[idx] = !expanded[idx];
+            expanded = templates.map((_,i)=>i===idx ? !expanded[idx] : false); // 只展开一个
             document.querySelectorAll('.template-item').forEach((el,i)=>{
                 if(expanded[i]) el.classList.add('expanded');
                 else el.classList.remove('expanded');
@@ -377,7 +388,8 @@ function getManagerHtml(templates: TemplateConfig[]): string {
         window.addEventListener('message', e => {
             if(e.data.type==='updateTemplates') {
                 templates = e.data.templates;
-                expanded = templates.map((_,i)=>i===0); // 新增后默认第一个展开
+                expandedIdx = e.data.expandedIdx ?? -1;
+                expanded = templates.map((_,i)=>i===expandedIdx);
                 setTimeout(()=>{
                     document.querySelectorAll('.template-item').forEach((el,i)=>{
                         if(expanded[i]) el.classList.add('expanded');
@@ -386,7 +398,7 @@ function getManagerHtml(templates: TemplateConfig[]): string {
                 }, 50);
             }
         });
-        // 初始化展开
+        // 初始化
         setTimeout(()=>{
             document.querySelectorAll('.template-item').forEach((el,i)=>{
                 if(expanded[i]) el.classList.add('expanded');

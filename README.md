@@ -23,6 +23,19 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 ```json
 [
     {
+      "name": "Simple Text",
+      "description": "A plain text template using string mode.",
+      "parameters": [
+        {
+          "name": "title",
+          "description": "Document title"
+        }
+      ],
+      "templateType": "string",
+      "template": "Title: ${title}\nthis is a plain text template ",
+      "fileName": "${title}.md"
+    },
+    {
       "name": "API Service",
       "description": "Quickly generate an API Service file with basic structure.",
       "parameters": [
@@ -43,19 +56,6 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
       "templateType": "js",
       "template": "return `export class ${toPascalCase(serviceName)}Service {\n       baseUrl = '${baseUrl}';\n       token = '${token}';\n}`",
       "fileName": "${serviceName}.service.ts"
-    },
-    {
-      "name": "Simple Text",
-      "description": "A plain text template using string mode.",
-      "parameters": [
-        {
-          "name": "title",
-          "description": "Document title"
-        }
-      ],
-      "templateType": "string",
-      "template": "Title: ${title}\nthis is a plain text template ",
-      "fileName": "${title}.md"
     }
 ]
 ```
