@@ -1,7 +1,7 @@
 {
   "name": "jo4lin-file-template",
   "displayName": "Custom File Template",
-  "description": "Create custom file templates and quickly generate files with parameters.",
+  "description": "Quickly new file with custom file template.",
   "version": "1.0.0",
   "publisher": "Jo4Lin",
   "license": "MIT",
@@ -65,8 +65,8 @@
       "properties": {
         "fileTemplate.templates": {
           "type": "array",
-          "description": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)",
-          "markdownDescription": "Custom file template configuration array. Add, edit, or delete templates here.\n[Manage Templates](command:file-template.manageTemplates)\n\n[Import Templates](command:file-template.importTemplates) | [Export Templates](command:file-template.exportTemplates)",
+          "description": "[Manage Templates](command:file-template.manageTemplates)\nCustom file template configuration array. Add, edit, or delete templates here.",
+          "markdownDescription": "[Manage Templates](command:file-template.manageTemplates)\nCustom file template configuration array. Add, edit, or delete templates here.\n\n[Import Templates](command:file-template.importTemplates) | [Export Templates](command:file-template.exportTemplates)",
           "items": {
             "type": "object",
             "properties": {
