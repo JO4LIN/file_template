@@ -18,9 +18,7 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 4. To create a file, right-click a folder and select **New File from Template**, or use the command palette.
 
 ## Template Configuration Example
-- use string
 ![string template](./images/template_example1.png)
-- ues js
 ![js template](./images/template_example2.png)
 
 
