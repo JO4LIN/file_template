@@ -397,7 +397,7 @@ function getManagerHtml(templates, expandedIdx = -1) {
         function editParam(idx, pi, field, value) { const params = [...(templates[idx].parameters||[])]; if(field==='required') value = !!value; params[pi] = { ...params[pi], [field]: value }; vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: params, expandedIdx: idx }); }
         function deleteParam(idx, pi) { const params = [...(templates[idx].parameters||[])]; params.splice(pi,1); vscode.postMessage({ type: 'edit', idx, field: 'parameters', value: params, expandedIdx: idx }); }
         function toggleDetail(idx) {
-            expanded = templates.map((_,i)=>i===idx ? !expanded[idx] : false); // 只展开一个
+            expanded[idx] = !expanded[idx]; // 多开：只切换当前，不影响其他
             document.querySelectorAll('.template-item').forEach((el,i)=>{
                 if(expanded[i]) el.classList.add('expanded');
                 else el.classList.remove('expanded');

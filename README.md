@@ -2,6 +2,8 @@
 
 Easily create new files from custom templates in VSCode. Supports parameterized templates, JS logic, and visual management.
 
+[中文说明](https://blog.csdn.net/lll12306/article/details/148674286?spm=1011.2124.3001.6209)
+
 ## Features
 - Visual template management (add, edit, delete) in settings
 - Parameterized templates (plain string or JS logic)
@@ -9,56 +11,18 @@ Easily create new files from custom templates in VSCode. Supports parameterized 
 - Import/export templates
 
 ## Getting Started
+![using tutorials](./images/example.gif)
 1. Install the extension and reload VSCode.
 2. Open VSCode settings, search for `fileTemplate.templates`, and click **Manage Templates** to open the visual manager.
 3. Add or edit templates as needed (auto save). You can also edit JSON directly via **Edit in settings.json**.
 4. To create a file, right-click a folder and select **New File from Template**, or use the command palette.
 
 ## Template Configuration Example
+- use string
+![string template](./images/template_example1.png)
+- ues js
+![js template](./images/template_example2.png)
 
-- Edit in template manager
-![alt text](./images/template_example.png)
-
-- Edit in settings.json
-```json
-[
-    {
-      "name": "Simple Text",
-      "description": "A plain text template using string mode.",
-      "parameters": [
-        {
-          "name": "title",
-          "description": "Document title"
-        }
-      ],
-      "templateType": "string",
-      "template": "Title: ${title}\nthis is a plain text template ",
-      "fileName": "${title}.md"
-    },
-    {
-      "name": "API Service",
-      "description": "Quickly generate an API Service file with basic structure.",
-      "parameters": [
-        {
-          "name": "serviceName",
-          "description": "Service name"
-        },
-        {
-          "name": "baseUrl",
-          "description": "Base API URL"
-        },
-        {
-          "name": "token",
-          "description": "Optional: auth token",
-          "required": false
-        }
-      ],
-      "templateType": "js",
-      "template": "return `export class ${toPascalCase(serviceName)}Service {\n       baseUrl = '${baseUrl}';\n       token = '${token}';\n}`",
-      "fileName": "${serviceName}.service.ts"
-    }
-]
-```
 
 ## Parameter Input
 - If a template has multiple parameters, input them comma-separated in order (e.g. `foo,bar,baz`).
